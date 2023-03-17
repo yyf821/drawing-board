@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>画板</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+        }
+
+    </style>
+</head>
+
+<body>
+    <canvas id="canvas" width="500" height="500"></canvas>
+    <div>
+        <div>
+            <button id="pen-button">笔</button>
+            <button id="eraser-button">橡皮</button>
+        </div>
+        <div>
+            <button id="undo-button">撤销</button>
+            <button id="redo-button">重做</button>
+            <button id="clear-button">清空</button>
+        </div>
+        <div>
+            <button id="rect-button">长方形</button>
+        </div>
+    </div>
+
+
+
+    <script>
+        // 定义画板类
+        class DrawingBoard {
+            constructor(canvas, context) {
+                this.canvas = canvas;
+                this.context = context;
+
+                // 为Canvas绑定事件监听器
+                canvas.addEventListener('mousedown', this.onMouseDown.bind(this));
+                canvas.addEventListener('mousemove', this.onMouseMove.bind(this));
+                canvas.addEventListener('mouseup', this.onMouseUp.bind(this));
+
+                // 定义默认画笔样式
+                this.context.lineWidth = 5;
+                this.context.lineCap = 'round';
+                this.context.strokeStyle = 'black';
+                this.context.globalCompositeOperation = 'source-over';
+
+                // 初始化变量
+                this.isDrawing = false;
+                this.lastX = 0;
+                this.lastY = 0;
+                this.lastDraw = null;
+
+                this.undoStack = [];
+                this.redoStack = [];
+
+                this.currentShape = 'pen';
+                this.shapeStartX = 0;
+                this.shapeStartY = 0;
+
+            }
+
+            onMouseDown(event) {
+                this.isDrawing = true;
+                this.lastX = event.offsetX;
+                this.lastY = event.offsetY;
+                const imageData = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
+                this.undoStack.push(imageData);
+                this.redoStack = [];
+
+                if (this.currentShape !== 'pen') {
+                    this.shapeStartX = event.offsetX;
+                    this.shapeStartY = event.offsetY;
+                    this.lastDraw = imageData;
+                }
+            }
+
+            onMouseMove(event) {
+                if (!this.isDrawing) return;
+
+                if (this.currentShape === 'rect') {
+                    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                    this.context.putImageData(this.lastDraw, 0, 0);
+                    const rectWidth = event.offsetX - this.shapeStartX;
+                    const rectHeight = event.offsetY - this.shapeStartY;
+                    this.context.strokeRect(this.shapeStartX, this.shapeStartY, rectWidth, rectHeight);
+                } else {
+                    this.context.beginPath();
+                    this.context.moveTo(this.lastX, this.lastY);
+                    this.context.lineTo(event.offsetX, event.offsetY);
+                    this.context.stroke();
+
+                    this.lastX = event.offsetX;
+                    this.lastY = event.offsetY;
+                }
+            }
+
+            onMouseUp(event) {
+                this.isDrawing = false;
+                if (this.currentShape === 'rect') {
+                    const rectWidth = event.offsetX - this.shapeStartX;
+                    const rectHeight = event.offsetY - this.shapeStartY;
+
+                    this.context.strokeRect(this.shapeStartX, this.shapeStartY, rectWidth, rectHeight);
+                }
+            }
+
+            setShape(shape) {
+                this.context.globalCompositeOperation = 'source-over';
+                this.currentShape = shape;
+            }
+
+            setLineColor(color) {
+                this.context.strokeStyle = color;
+            }
+
+            setLineWidth(width) {
+                this.context.lineWidth = width;
+            }
+
+            setLineCap(style) {
+                this.context.lineCap = style;
+            }
+
+            setEraser() {
+                this.context.globalCompositeOperation = 'destination-out';
+            }
+
+            undo() {
+                if (this.undoStack.length === 0) return;
+                this.redoStack.push(this.context.getImageData(0, 0, this.canvas.width, this.canvas.height));
+                this.context.putImageData(this.undoStack.pop(), 0, 0);
+            }
+
+            redo() {
+                if (this.redoStack.length === 0) return;
+                this.undoStack.push(this.context.getImageData(0, 0, this.canvas.width, this.canvas.height));
+                this.context.putImageData(this.redoStack.pop(), 0, 0);
+            }
+
+            clear() {
+                this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.undoStack = [];
+                this.redoStack = [];
+            }
+        }
+
+        const __main = function () {
+            // 创建Canvas画布元素
+            const canvas = document.getElementById('canvas');
+            const context = canvas.getContext('2d');
+
+            // 创建画板对象
+            const drawingBoard = new DrawingBoard(canvas, context);
+
+            const eraserButton = document.getElementById('eraser-button');
+            eraserButton.addEventListener('click', () => {
+                drawingBoard.setEraser();
+            });
+
+            const rectButton = document.getElementById('rect-button');
+            rectButton.addEventListener('click', () => {
+                drawingBoard.setShape('rect');
+            });
+
+            const penButton = document.getElementById('pen-button');
+            penButton.addEventListener('click', () => {
+                drawingBoard.setShape('pen');
+            });
+
+            const undoButton = document.getElementById('undo-button');
+            undoButton.addEventListener('click', () => {
+                drawingBoard.undo();
+            });
+
+            const redoButton = document.getElementById('redo-button');
+            redoButton.addEventListener('click', () => {
+                drawingBoard.redo();
+            });
+
+            const clearButton = document.getElementById('clear-button');
+            clearButton.addEventListener('click', () => {
+                drawingBoard.clear();
+            });
+        }
+        __main()
+
+    </script>
+</body>
+
+</html>
