@@ -55,5 +55,13 @@ const __main = function () {
     lineWidth.addEventListener("change", (event) => {
         drawingBoard.setLineWidth(event.target.value);
     });
+
+    document.addEventListener('keydown', function (event) {
+        if (event.ctrlKey && event.code === 'KeyZ') {
+            drawingBoard.undo();
+        } else if (event.ctrlKey && event.code === 'KeyY') {
+            drawingBoard.redo();
+        }
+    });
 };
 __main();
