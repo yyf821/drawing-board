@@ -20,6 +20,10 @@
             <button id="eraser-button">橡皮</button>
         </div>
         <div>
+            <button id="rect-button">矩形</button>
+            <button id="circle-button">圆形</button>
+        </div>
+        <div>
             <input type="color" id="color" />
             <input type="range" id="line-width" min="1" max="100" value="5" />
         </div>
@@ -28,9 +32,6 @@
             <button id="redo-button">重做</button>
             <button id="clear-button">清空</button>
             <button id="download-button">下载</button>
-        </div>
-        <div>
-            <button id="rect-button">长方形</button>
         </div>
     </div>
 
@@ -61,7 +62,7 @@
                 this.undoStack = [];
                 this.redoStack = [];
 
-                this.currentShape = "pen";
+                this.currentTool = "pen";
                 this.shapeStartX = 0;
                 this.shapeStartY = 0;
             }
@@ -72,24 +73,26 @@
                 this.context.lineWidth = this.lineWidth;
                 this.lastX = event.offsetX;
                 this.lastY = event.offsetY;
-                this.saveCanvas();
-                this.undoStack.push(this.imageData);
+                const imageData = this.context.getImageData(0, 0, this.canvas.width, this.canvas.height);
+                this.undoStack.push(imageData);
                 this.redoStack = [];
 
-                if (this.currentShape !== "pen") {
+                if (["rect", "circle"].includes(this.currentTool)) {
                     this.shapeStartX = event.offsetX;
                     this.shapeStartY = event.offsetY;
+                    this.imgData = imageData;
                 }
             }
 
             onMouseMove(event) {
                 if (!this.isDrawing) return;
 
-                if (this.currentShape !== "pen") {
-                    this.restoreCanvas();
-                    const rectWidth = event.offsetX - this.shapeStartX;
-                    const rectHeight = event.offsetY - this.shapeStartY;
-                    this.context.strokeRect(this.shapeStartX, this.shapeStartY, rectWidth, rectHeight);
+                if (["rect", "circle"].includes(this.currentTool)) {
+                    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                    this.context.putImageData(this.imgData, 0, 0);
+                    const deltaX = event.offsetX - this.shapeStartX;
+                    const deltaY = event.offsetY - this.shapeStartY;
+                    this.drawShape(this.shapeStartX, this.shapeStartY, deltaX, deltaY);
                 } else {
                     this.context.beginPath();
                     this.context.moveTo(this.lastX, this.lastY);
@@ -103,25 +106,45 @@
 
             onMouseUp(event) {
                 this.isDrawing = false;
-                if (this.currentShape === "rect") {
-                    const rectWidth = event.offsetX - this.shapeStartX;
-                    const rectHeight = event.offsetY - this.shapeStartY;
+                if (["rect", "circle"].includes(this.currentTool)) {
+                    const deltaX = event.offsetX - this.shapeStartX;
+                    const deltaY = event.offsetY - this.shapeStartY;
 
-                    this.context.strokeRect(this.shapeStartX, this.shapeStartY, rectWidth, rectHeight);
+                    this.drawShape(this.shapeStartX, this.shapeStartY, deltaX, deltaY);
                 }
             }
 
-            saveCanvas() {
-                this.imgData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+            drawShape(startX, startY, deltaX, deltaY) {
+                switch (this.currentTool) {
+                    case "circle":
+                        const radius = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                        this.drawCircle(startX, startY, radius);
+                        break;
+                    case "rect":
+                        this.drawRect(startX, startY, deltaX, deltaY);
+                        break;
+                    default:
+                        break;
+                }
             }
 
-            restoreCanvas() {
-                this.ctx.putImageData(this.imgData, 0, 0);
+            drawCircle(x, y, radius) {
+                this.context.beginPath();
+                this.context.arc(x, y, radius, 0, 2 * Math.PI);
+                this.context.stroke();
             }
 
-            setShape(shape) {
-                this.context.globalCompositeOperation = "source-over";
-                this.currentShape = shape;
+            drawRect(x, y, width, height) {
+                this.context.strokeRect(x, y, width, height);
+            }
+
+            setTool(shape) {
+                this.currentTool = shape;
+                if (this.currentTool === "eraser") {
+                    this.context.globalCompositeOperation = "destination-out";
+                } else {
+                    this.context.globalCompositeOperation = "source-over";
+                }
             }
 
             setLineColor(color) {
@@ -134,11 +157,6 @@
 
             setLineCap(style) {
                 this.context.lineCap = style;
-            }
-
-            setEraser() {
-                this.setShape("");
-                this.context.globalCompositeOperation = "destination-out";
             }
 
             undo() {
@@ -177,17 +195,22 @@
 
             const eraserButton = document.getElementById("eraser-button");
             eraserButton.addEventListener("click", () => {
-                drawingBoard.setEraser();
+                drawingBoard.setTool("eraser");
             });
 
             const rectButton = document.getElementById("rect-button");
             rectButton.addEventListener("click", () => {
-                drawingBoard.setShape("rect");
+                drawingBoard.setTool("rect");
+            });
+
+            const circleButton = document.getElementById("circle-button");
+            circleButton.addEventListener("click", () => {
+                drawingBoard.setTool("circle");
             });
 
             const penButton = document.getElementById("pen-button");
             penButton.addEventListener("click", () => {
-                drawingBoard.setShape("pen");
+                drawingBoard.setTool("pen");
             });
 
             const undoButton = document.getElementById("undo-button");
