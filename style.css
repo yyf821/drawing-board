@@ -1,0 +1,17 @@
+.tools {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.size-set,
+.color-set {
+    display: flex;
+    align-items: center;
+}
+
+canvas {
+    border: 1px solid black;
+    cursor: crosshair;
+}
