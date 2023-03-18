@@ -1,3 +1,16 @@
+function selectButton(event) {
+    // 重置所有按钮的选中状态
+    const buttons = document.querySelectorAll(".toolbar__bottom .toolbar__btn");
+
+    buttons.forEach(function (button) {
+        button.classList.remove("toolbar__btn--selected");
+    });
+
+    // 设置当前按钮为选中状态
+    const button = event.target;
+    button.classList.add("toolbar__btn--selected");
+}
+
 const __main = function () {
     // 创建Canvas画布元素
     const canvas = document.getElementById("canvas");
@@ -7,22 +20,26 @@ const __main = function () {
     const drawingBoard = new DrawingBoard(canvas, context);
 
     const eraserButton = document.getElementById("eraser-button");
-    eraserButton.addEventListener("click", () => {
+    eraserButton.addEventListener("click", (event) => {
+        selectButton(event);
         drawingBoard.setTool("eraser");
     });
 
     const rectButton = document.getElementById("rect-button");
-    rectButton.addEventListener("click", () => {
+    rectButton.addEventListener("click", (event) => {
+        selectButton(event);
         drawingBoard.setTool("rect");
     });
 
     const circleButton = document.getElementById("circle-button");
-    circleButton.addEventListener("click", () => {
+    circleButton.addEventListener("click", (event) => {
+        selectButton(event);
         drawingBoard.setTool("circle");
     });
 
     const penButton = document.getElementById("pen-button");
-    penButton.addEventListener("click", () => {
+    penButton.addEventListener("click", (event) => {
+        selectButton(event);
         drawingBoard.setTool("pen");
     });
 
@@ -56,10 +73,10 @@ const __main = function () {
         drawingBoard.setLineWidth(event.target.value);
     });
 
-    document.addEventListener('keydown', function (event) {
-        if (event.ctrlKey && event.code === 'KeyZ') {
+    document.addEventListener("keydown", function (event) {
+        if (event.ctrlKey && event.code === "KeyZ") {
             drawingBoard.undo();
-        } else if (event.ctrlKey && event.code === 'KeyY') {
+        } else if (event.ctrlKey && event.code === "KeyY") {
             drawingBoard.redo();
         }
     });

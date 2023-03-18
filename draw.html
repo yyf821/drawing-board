@@ -8,30 +8,36 @@
 </head>
 
 <body>
-    <div>
-        <button id="undo-button" title="Ctrl+Z">撤销</button>
-        <button id="redo-button" title="Ctrl+Y">重做</button>
-        <button id="clear-button">清空</button>
-        <button id="download-button">保存</button>
+    <div class="toolbar">
+        <div class="toolbar__top">
+            <button class="toolbar__btn" id="undo-button" title="Ctrl+Z">撤销</button>
+            <button class="toolbar__btn" id="redo-button" title="Ctrl+Y">重做</button>
+            <button class="toolbar__btn" id="clear-button">清空</button>
+            <button class="toolbar__btn" id="download-button">保存</button>
+        </div>
+        <div class="toolbar__bottom">
+            <div class="toolbar__group">
+                <h3 class="toolbar__group-title">工具</h3>
+                <button id="pen-button" class="toolbar__btn toolbar__btn--selected">笔</button>
+                <button id="eraser-button" class="toolbar__btn">橡皮</button>
+            </div>
+            <div class="toolbar__group">
+                <h3 class="toolbar__group-title">形状</h3>
+                <button id="rect-button" class="toolbar__btn">矩形</button>
+                <button id="circle-button" class="toolbar__btn">圆形</button>
+            </div>
+            <div class="toolbar__group">
+                <h3 class="toolbar__group-title">大小</h3>
+                <input type="range" id="line-width" min="1" max="100" value="5" />
+            </div>
+            <div class="toolbar__group">
+                <h3 class="toolbar__group-title">颜色</h3>
+                <input type="color" id="color" name="color" value="#000000">
+            </div>
+        </div>
+
     </div>
-    <div class="tools">
-        <div>
-            <button id="pen-button" class="tool-btn">笔</button>
-            <button id="eraser-button" class="tool-btn">橡皮</button>
-        </div>
-        <div>
-            <button id="rect-button" class="tool-btn">矩形</button>
-            <button id="circle-button" class="tool-btn">圆形</button>
-        </div>
-        <div class="size-set">
-            <label for="size">大小：</label>
-            <input type="range" id="line-width" min="1" max="100" value="5" />
-        </div>
-        <div class="color-set">
-            <label for="color">颜色：</label>
-            <input type="color" id="color" name="color" value="#000000">
-        </div>
-    </div>
+
     <canvas id="canvas" width="500" height="500"></canvas>
     <div id="mouse-coords"></div>
     <script src="board.js"></script>
