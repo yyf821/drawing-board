@@ -12,6 +12,7 @@ class DrawingBoard {
         canvas.addEventListener("mousemove", this.onMouseMoveDisplayCoords);
         canvas.addEventListener("mouseup", this.onMouseUp);
         canvas.addEventListener("mouseleave", this.clearDisplayCoords);
+        canvas.addEventListener("click", this.onClick);
 
         // 定义默认画笔样式
         this.lineColor = "black";
@@ -34,7 +35,9 @@ class DrawingBoard {
     }
 
     onMouseDown = (event) => {
-        this.isDrawing = true;
+        if (this.currentTool !== "picker") {
+            this.isDrawing = true;
+        }
         this.context.strokeStyle = this.lineColor;
         this.context.lineWidth = this.lineWidth;
         this.lastX = event.offsetX;
@@ -90,6 +93,16 @@ class DrawingBoard {
         }
     };
 
+    onClick = (event) => {
+        const x = event.offsetX;
+        const y = event.offsetY;
+        if (this.currentTool === "picker") {
+            const pixel = this.context.getImageData(x, y, 1, 1).data;
+            const color = rgbToHex(pixel[0], pixel[1], pixel[2]);
+            this.setLineColor(color);
+        }
+    };
+
     drawShape(startX, startY, deltaX, deltaY) {
         switch (this.currentTool) {
             case "circle":
@@ -125,8 +138,8 @@ class DrawingBoard {
 
     setLineColor(color) {
         this.lineColor = color;
-        const currentColorBlock = this.currentColorEl.querySelector('.color-block');
-        const currentColorCode = this.currentColorEl.querySelector('.color-code');
+        const currentColorBlock = this.currentColorEl.querySelector(".color-block");
+        const currentColorCode = this.currentColorEl.querySelector(".color-code");
         // 更新当前颜色块和颜色代码显示
         currentColorBlock.style.backgroundColor = color;
         currentColorCode.textContent = color;

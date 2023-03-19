@@ -48,6 +48,12 @@ const __main = function () {
         drawingBoard.setTool("pen");
     });
 
+    const pickerButton = document.getElementById("picker-button");
+    pickerButton.addEventListener("click", (event) => {
+        selectButton(event);
+        drawingBoard.setTool("picker");
+    });
+
     const undoButton = document.getElementById("undo-button");
     undoButton.addEventListener("click", () => {
         drawingBoard.undo();
