@@ -40,10 +40,13 @@
     line-height: 20px;
     padding: 6px 10px;
     border-radius: 4px;
-    margin-right: 10px;
     background-color: transparent;
     color: var(--toolbar-color);
     transition: all 0.2s ease;
+}
+
+.toolbar__btn + .toolbar__btn {
+    margin-left: 10px;
 }
 
 .toolbar__btn:hover {
@@ -66,7 +69,6 @@
 
 .toolbar__group {
     margin-right: 20px;
-
 }
 
 .toolbar__group-title {
@@ -94,7 +96,6 @@
     margin-right: 12px;
 }
 
-
 .color__btn {
     cursor: pointer;
     border: 1px solid #ccc;
@@ -116,7 +117,7 @@
 }
 
 /* 和按钮对齐 */
-#line-width{
+#line-width {
     margin-top: 6px;
 }
 
