@@ -36,10 +36,10 @@
 .toolbar__btn {
     border: none;
     outline: none;
+    cursor: pointer;
     line-height: 20px;
     padding: 6px 10px;
     border-radius: 4px;
-    cursor: pointer;
     margin-right: 10px;
     background-color: transparent;
     color: var(--toolbar-color);
@@ -50,7 +50,8 @@
     background-color: var(--toolbar-hover-color);
 }
 
-.toolbar__btn--selected {
+.toolbar__btn--selected,
+.toolbar__btn--selected:hover {
     background-color: var(--toolbar-selected-bg-color);
     color: var(--toolbar-selected-color);
 }
@@ -76,33 +77,50 @@
     text-align: center;
 }
 
+.color-picker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#current-color {
+    margin-right: 16px;
+}
+
+.color-buttons {
+    display: flex;
+    max-width: 192px;
+    flex-wrap: wrap;
+    margin-right: 12px;
+}
+
+
+.color__btn {
+    cursor: pointer;
+    border: 1px solid #ccc;
+    outline: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    margin: 4px;
+}
+
+#current-color .color-block {
+    border: 1px solid #ccc;
+    width: 32px;
+    height: 32px;
+    margin: auto;
+    background-color: black;
+    margin-bottom: 6px;
+    border-radius: 50%;
+}
+
+/* 和按钮对齐 */
+#line-width{
+    margin-top: 6px;
+}
+
 canvas {
     border: 1px solid black;
     cursor: crosshair;
-}
-
-@media screen and (max-width: 768px) {
-    .toolbar__top {
-        flex-wrap: wrap;
-        margin-bottom: 20px;
-    }
-
-    .toolbar__btn {
-        margin-bottom: 10px;
-    }
-
-    .toolbar__bottom {
-        justify-content: center;
-    }
-
-    .toolbar__group {
-        flex: 0 0 calc(50% - 20px);
-        margin-bottom: 20px;
-    }
-}
-
-@media screen and (max-width: 576px) {
-    .toolbar__group {
-        margin-right: 0;
-    }
 }

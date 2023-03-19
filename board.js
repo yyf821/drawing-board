@@ -3,7 +3,8 @@ class DrawingBoard {
     constructor(canvas, context) {
         this.canvas = canvas;
         this.context = context;
-        this.mouseCoord = document.getElementById("mouse-coords");
+        this.mouseCoord = document.querySelector("#mouse-coords");
+        this.currentColorEl = document.querySelector("#current-color");
 
         // 为Canvas绑定事件监听器
         canvas.addEventListener("mousedown", this.onMouseDown);
@@ -124,6 +125,11 @@ class DrawingBoard {
 
     setLineColor(color) {
         this.lineColor = color;
+        const currentColorBlock = this.currentColorEl.querySelector('.color-block');
+        const currentColorCode = this.currentColorEl.querySelector('.color-code');
+        // 更新当前颜色块和颜色代码显示
+        currentColorBlock.style.backgroundColor = color;
+        currentColorCode.textContent = color;
     }
 
     setLineWidth(width) {
